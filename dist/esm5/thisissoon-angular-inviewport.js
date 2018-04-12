@@ -261,7 +261,9 @@ var InViewportDirective = /** @class */ (function () {
     });
     InViewportDirective.prototype.ngAfterViewInit = function () {
         var _this = this;
-        this.calculateInViewportStatus();
+        setTimeout(function () {
+            _this.calculateInViewportStatus();
+        }, 100);
         this.cdRef.detectChanges();
         this.viewport$
             .pipe(debounceTime(this.debounce), takeUntil(this.ngUnsubscribe$))
