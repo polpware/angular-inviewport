@@ -128,7 +128,9 @@ export class InViewportDirective implements AfterViewInit, OnDestroy {
      * @memberof InViewportDirective
      */
     public ngAfterViewInit(): void {
-        this.calculateInViewportStatus();
+        setTimeout(() => {
+            this.calculateInViewportStatus();
+        }, 100);
         this.cdRef.detectChanges();
 
         this.viewport$
