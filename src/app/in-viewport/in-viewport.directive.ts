@@ -1,12 +1,16 @@
 import {
-    Directive, ElementRef, HostBinding, EventEmitter,
-    Input, Output, OnDestroy, AfterViewInit,
-    ChangeDetectorRef, NgZone
+    Directive,
+    ElementRef,
+    HostBinding,
+    EventEmitter,
+    Input,
+    Output,
+    OnDestroy,
+    AfterViewInit,
+    ChangeDetectorRef,
+    NgZone
 } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
-import { fromEvent } from 'rxjs/observable/fromEvent';
-import { merge } from 'rxjs/observable/merge';
+import { Observable, Subject, fromEvent, merge } from 'rxjs';
 import { auditTime, debounceTime, takeUntil } from 'rxjs/operators';
 
 import { WindowRef } from './window/window-ref.service';
@@ -14,10 +18,9 @@ import { Viewport } from './shared/viewport.model';
 import * as eventData from './shared/event-data';
 
 /**
- * A simple lightweight library for Angular with no
- * external dependencies that detects when an element is within the
- * browser viewport and adds a `in-viewport` or `not-in-viewport` class
- * to the element.
+ * A simple lightweight library for Angular with that detects when an
+ * element is within the browser viewport and adds a `in-viewport` or
+ * `not-in-viewport` class to the element.
  *
  * @example
  * ```html
@@ -59,23 +62,20 @@ export class InViewportDirective implements AfterViewInit, OnDestroy {
      *
      * @memberof InViewportDirective
      */
-    @Output()
-    public inViewportChange = new EventEmitter<boolean>();
+    @Output() public inViewportChange = new EventEmitter<boolean>();
     /**
      * Amount of time in ms to wait for other scroll events
      * before running event handler
      *
      * @memberof InViewportDirective
      */
-    @Input()
-    public debounce = 100;
+    @Input() public debounce = 100;
     /**
      * A parent element to listen to scroll events from
      *
      * @memberof InViewportDirective
      */
-    @Input()
-    public parent: any;
+    @Input() public parent: any;
     /**
      * Returns true if element is in viewport
      *
@@ -87,8 +87,6 @@ export class InViewportDirective implements AfterViewInit, OnDestroy {
     }
     /**
      * Returns true if element is not in viewport
-     *
-     * @readonly
      *
      * @memberof InViewportDirective
      */
@@ -118,9 +116,7 @@ export class InViewportDirective implements AfterViewInit, OnDestroy {
         private windowRef: WindowRef,
         private cdRef: ChangeDetectorRef,
         public ngZone: NgZone
-    ) {
-        this.inViewport = false;
-    }
+    ) { }
     /**
      * Subscribe to `viewport$` observable which
      * will call event handler
@@ -128,16 +124,11 @@ export class InViewportDirective implements AfterViewInit, OnDestroy {
      * @memberof InViewportDirective
      */
     public ngAfterViewInit(): void {
-        setTimeout(() => {
-            this.calculateInViewportStatus();
-        }, 100);
+        this.calculateInViewportStatus();
         this.cdRef.detectChanges();
 
         this.viewport$
-            .pipe(
-            debounceTime(this.debounce),
-            takeUntil(this.ngUnsubscribe$)
-            )
+            .pipe(debounceTime(this.debounce), takeUntil(this.ngUnsubscribe$))
             .subscribe(() => this.calculateInViewportStatus());
 
         // Listen for window scroll/resize events.
@@ -146,20 +137,14 @@ export class InViewportDirective implements AfterViewInit, OnDestroy {
                 fromEvent(this.windowRef as any, eventData.eventWindowResize),
                 fromEvent(this.windowRef as any, eventData.eventWindowScroll)
             )
-                .pipe(
-                auditTime(this.debounce),
-                takeUntil(this.ngUnsubscribe$)
-                )
+                .pipe(auditTime(this.debounce), takeUntil(this.ngUnsubscribe$))
                 .subscribe(() => this.onViewportChange());
         });
 
         if (this.parent) {
             this.ngZone.runOutsideAngular(() => {
                 fromEvent(this.parent, eventData.eventScroll)
-                    .pipe(
-                    auditTime(this.debounce),
-                    takeUntil(this.ngUnsubscribe$)
-                    )
+                    .pipe(auditTime(this.debounce), takeUntil(this.ngUnsubscribe$))
                     .subscribe(() => this.onParentScroll());
             });
         }
@@ -182,6 +167,7 @@ export class InViewportDirective implements AfterViewInit, OnDestroy {
     public onViewportChange(): void {
         this.viewport$.next();
     }
+
     /**
      * Calculate inViewport status and emit event
      * when viewport status has changed
@@ -234,6 +220,7 @@ export class InViewportDirective implements AfterViewInit, OnDestroy {
             return false;
         }
     }
+
     /**
      * trigger `ngUnsubscribe` complete on
      * component destroy lifecycle hook
